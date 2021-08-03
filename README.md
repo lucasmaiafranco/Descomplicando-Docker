@@ -4,23 +4,28 @@
 
 - Um pouco de teoria
 
-- Criado VM Debian, utilizei o Vagrant
-	Utilizo o vagrantfile deste repo
+- Criado VM Debian, utilizei o Vagrant com o vagrantfile deste repo
+
+Comandos Vagrant
+
 	Para subir a VM
+	
 		vagrant up
 		
 	Verificar status da VM
+		
 		vagrant status (Deve estar no diretório que está o Vagrantfile)
 		vagrant global-status (Lista todas VMs da sua máquina)
 		
 	Conectar SSH
+	
 		vagrant ssh (deve estar no diretório que está o Vagrantfile)
 		vagrant ssh <id da vm>
 		
 	
 - Instalação do Docker
 
-	apt install curl -y && curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh ./get-docker.sh
+		apt install curl -y && curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh ./get-docker.sh
 
 - Comandos básicos docker
 
