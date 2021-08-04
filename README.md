@@ -129,7 +129,7 @@ Comandos Vagrant
 		# Executa comando quando inicia o container
 		CMD stress --cpu 1 --vm-bytes 64M --vm 1
 		
-	Contruir uma imagem através do Dockerfile
+	Construir uma imagem através do Dockerfile
 	
 		docker image build -t toskeira:1.0 .
 		
