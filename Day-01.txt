@@ -89,3 +89,62 @@ pause/unpause container
 
 	docker container pause <container ID>
 	docker container unpause <container ID>
+	
+Informações do container
+
+	docker container inspect <container ID>
+	
+Log do container
+
+	docker container logs -f <container ID>
+	
+Remover container
+
+	docker container rm <container ID>
+	
+	docker container rm -f <container ID>
+	
+Ver o consumo de CPU e memória do container
+	
+	docker container stats <container ID>
+	
+Ver os processos em execução no container
+
+	docker container top <container ID>
+	
+Criando container com o tamanho da memória (128 M)
+	
+	docker container run -d -m 128M nginx
+	
+Criando container com o tamanho da memória (128 M) e CPU (0.5 é a metade de um core)
+
+	docker container run -d -m 128M --cpus 0.5 nginx
+	
+Atualizar o container (aumentar memória, CPU, etc)
+	
+	docker container update --memory 64M --cpus 0.4 nginx
+	
+Primeiro Dockerfile
+		
+# Imagem que será usada
+FROM debian
+# Label cria uma info, metadata
+LABEL app="Giropops"
+# ENV criar uma variavel de ambiente no container
+ENV LUCAS="LINDAO"
+# Executa comando no momento do build, quando está criando a imagem
+RUN apt-get update && apt-get install -y stress && apt-get clean
+# Executa comando quando inicia o container
+CMD stress --cpu 1 --vm-bytes 64M --vm 1
+		
+Contruir uma imagem através do Dockerfile
+
+	docker image build -t toskeira:1.0 .
+	
+Listar as imagens
+
+	docker images ls
+	
+Criando container com a nossa imagem
+
+	docker container run -d toskeira:1.0
