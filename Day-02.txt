@@ -1,0 +1,102 @@
+## Day 02
+
+- Volumes Bind
+
+É quando ja temos um diretório e queremos montar esse diretório dentro do container
+	
+	Criando container com volume bind
+	
+		mkdir /opt/teste
+		
+		docker container run -ti --mount type=bind,src=/opt/teste,dst=/teste debian
+		
+		src -> diretório que deseja usar no container
+		dst -> diretório que será criado no container
+		
+	Segue os testes realizados:
+		
+		- Criamos um diretório
+		- Criamos um conteiner passando o diretório criado
+		- Dentro do container criamos um arquivo no diretório
+		- Saimos do container (com isso ele é finalizado)
+		- Verificamos o conteúdo do arquivo criado dentro do container.
+		
+	segue os comandos 
+	
+		root@docker-server:/opt# mkdir /opt/teste
+		root@docker-server:/opt# docker container run -ti --mount type=bind,src=/opt/teste,dst=/teste debian
+		root@eebf87b86a27:/# touch /teste/teste.txt
+		root@eebf87b86a27:/# echo "Isso e um teste" > /teste/teste.txt
+		root@eebf87b86a27:/# exit
+		exit
+		root@docker-server:/opt# docker container ls
+		CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+		root@docker-server:/opt# cat /opt/teste/teste.txt
+		Isso e um teste
+		root@docker-server:/opt#
+		
+- Volumes
+
+	Listar os volumes
+	
+		docker volume ls
+		
+	Criando volume
+	
+		docker volume create <nome do volume>
+		
+	Verificar as config do volume
+	
+		docker volume inspect <nome do volume>
+		
+	Diretório do volume (onde ficam os files)
+	
+		/var/lib/docker/volumes/<nome do volume>/_data
+		
+	Criando container utilizando o volume criado
+	
+		docker container run -ti --mount type=volume,src=<nome do volume>,dst=/teste debian
+		
+		src -> nome do volume
+		dst -> diretório que será criado no container
+		
+	Segue os testes realizados
+	
+	- Criamos um volume chamado fusca
+	
+		root@docker-server:/# docker volume create fusca
+	
+	- Criamos um arquivo dentro do diretório do volume
+		
+		root@docker-server:/# touch /var/lib/docker/volumes/fusca/_data/fusca_77
+		
+	- Criamos um container debian passando o volume criado
+	
+		root@docker-server:/# docker container run -ti --mount type=volume,src=fusca,dst=/fusca debian
+		
+	- Dentro do container adicionamos o texto "Fusca Branco" no arquivo criado anteriormente fusca_77
+	
+		root@8609465c807e:/# ls /fusca/fusca_77
+		/fusca/fusca_77
+		root@8609465c807e:/# echo "Fusca Branco" > /fusca/fusca_77	
+		
+	- Saimos do container (com isso ele é finalizado)
+	
+		root@8609465c807e:/# exit
+		exit
+		root@docker-server:/# docker container ls
+		CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+		
+	- Verificamos o conteúdo do arquivo
+	
+		root@docker-server:/# cat /var/lib/docker/volumes/fusca/_data/fusca_77
+		Fusca Branco
+		
+	- Criamos outro container centos e verificamos o conteudo do mesmo arquivo (fusca_77)
+
+		root@docker-server:/var/lib/docker/volumes/fusca/_data# docker container run -ti --mount type=volume,src=fusca,dst=/fusca centos
+		[root@1d46daf87440 /]# cat /fusca/fusca_77
+		Fusca Branco
+		[root@1d46daf87440 /]# exit
+		exit
+	
