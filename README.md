@@ -147,7 +147,7 @@ Comandos Vagrant
 
 - Volumes Bind
 
-É quando ja temos um diretório e queremos montar esse diretório dentro do container
+	É quando ja temos um diretório e queremos montar esse diretório dentro do container
 	
 	Criando container com volume bind
 	
