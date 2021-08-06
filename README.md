@@ -151,7 +151,7 @@ Comandos Vagrant
 
 - Volumes Bind
 
-É quando ja temos um diretório e queremos montar esse diretório dentro do container
+	É quando ja temos um diretório e queremos montar esse diretório dentro do container
 	
 	Criando container com volume bind
 	
@@ -209,45 +209,46 @@ Comandos Vagrant
 		src -> nome do volume
 		dst -> diretório que será criado no container
 		
-	Segue os testes realizados
+	- Segue os testes realizados
 	
-	- Criamos um volume chamado fusca
+	Criamos um volume chamado fusca
 	
 		root@docker-server:/# docker volume create fusca
 	
-	- Criamos um arquivo dentro do diretório do volume
+	Criamos um arquivo dentro do diretório do volume
 		
 		root@docker-server:/# touch /var/lib/docker/volumes/fusca/_data/fusca_77
 		
-	- Criamos um container debian passando o volume criado
+	Criamos um container debian passando o volume criado
 	
 		root@docker-server:/# docker container run -ti --mount type=volume,src=fusca,dst=/fusca debian
 		
-	- Dentro do container adicionamos o texto "Fusca Branco" no arquivo criado anteriormente fusca_77
+	Dentro do container adicionamos o texto "Fusca Branco" no arquivo criado anteriormente fusca_77
 	
 		root@8609465c807e:/# ls /fusca/fusca_77
 		/fusca/fusca_77
 		root@8609465c807e:/# echo "Fusca Branco" > /fusca/fusca_77	
 		
-	- Saimos do container (com isso ele é finalizado)
+	Saimos do container (com isso ele é finalizado)
 	
 		root@8609465c807e:/# exit
 		exit
 		root@docker-server:/# docker container ls
 		CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 		
-	- Verificamos o conteúdo do arquivo
+	Verificamos o conteúdo do arquivo
 	
 		root@docker-server:/# cat /var/lib/docker/volumes/fusca/_data/fusca_77
 		Fusca Branco
 		
-	- Criamos outro container centos e verificamos o conteudo do mesmo arquivo (fusca_77)
+	Criamos outro container centos e verificamos o conteudo do mesmo arquivo (fusca_77)
 
 		root@docker-server:/var/lib/docker/volumes/fusca/_data# docker container run -ti --mount type=volume,src=fusca,dst=/fusca centos
 		[root@1d46daf87440 /]# cat /fusca/fusca_77
 		Fusca Branco
 		[root@1d46daf87440 /]# exit
 		exit
+<<<<<<< HEAD
 		
 	Comando para apagar todos volumes que não estão sendo utilizados, por nenhum container
 	
@@ -258,3 +259,6 @@ Comandos Vagrant
 	
 		Criamos o container
 	
+=======
+	
+>>>>>>> 01f562524e6f67dd02b00323413dc39ae213b02e
