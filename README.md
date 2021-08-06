@@ -96,6 +96,10 @@ Comandos Vagrant
 		
 		docker container rm -f <container ID>
 		
+	Remover todos conatiner que estão stopados
+	
+		docker container prune
+		
 	Ver o consumo de CPU e memória do container
 	
 		docker container stats <container ID>
@@ -244,4 +248,13 @@ Comandos Vagrant
 		Fusca Branco
 		[root@1d46daf87440 /]# exit
 		exit
+		
+	Comando para apagar todos volumes que não estão sendo utilizados, por nenhum container
+	
+		docker volume prune
+		
+		
+	Data Only (utilizado antigamente quando não tinha volume)
+	
+		Criamos o container
 	
