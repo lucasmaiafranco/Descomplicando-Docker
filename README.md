@@ -289,3 +289,78 @@ Criamos um container passando o volume (dbdados) que queremos fazer backup, o vo
 Passamos um diretório para salvar o backup (/opt/backup) e passamos o comando tar para empacotar o diretório /data
 
 	docker container run -ti --mount type=volume,src=dbdados,dst=/data --mount type=bind,src=/opt/backup,dst=/backup debian tar -cvf /backup/bkp-banco.tar /data
+
+### Dockerfile
+
+Cirando um docker file apache
+
+	FROM debian
+
+	RUN apt-get update && apt-get install -y apache2 && apt-get clean
+	ENV APACHE_LOCK_DIR="/var/lock"
+	ENV APACHE_PID_FILE="/var/run/apache2.pid"
+	ENV APACHE_RUN_USER="www-data"
+	ENV APACHE_RUN_GROUP="www-data"
+	ENV APACHE_LOG_DIR="/var/log/apache2"
+
+	LABEL description="Webserver"
+
+	VOLUME /var/www/html
+	EXPOSE 80
+	
+Fazendo build do dockerfile
+
+	docker image build -t meuapache:1.0 .
+	
+Criando nova imagem do apache, agora colocando o serviço do apache como principal da imagem
+
+	FROM debian
+
+	RUN apt-get update && apt-get install -y apache2 && apt-get clean
+	ENV APACHE_LOCK_DIR="/var/lock"
+	ENV APACHE_PID_FILE="/var/run/apache2.pid"
+	ENV APACHE_RUN_USER="www-data"
+	ENV APACHE_RUN_GROUP="www-data"
+	ENV APACHE_LOG_DIR="/var/log/apache2"
+
+	LABEL description="Webserver"
+
+	VOLUME /var/www/html
+	EXPOSE 80
+
+	ENTRYPOINT ["/usr/sbin/apachectl"]
+	CMD ["-D", "FOREGROUND"]
+	
+Build da imagem
+
+	docker image build -t meuapache:2.0 .
+	
+Subindo container com a imagem criada
+
+	docker container run -d -p 8080:80 meuapache:2.0
+	
+Novo Dockerfile, agora copiando arquvio index.html para dentro do container
+
+	FROM debian
+
+	RUN apt-get update && apt-get install -y apache2 && apt-get clean
+	ENV APACHE_LOCK_DIR="/var/lock"
+	ENV APACHE_PID_FILE="/var/run/apache2.pid"
+	ENV APACHE_RUN_USER="www-data"
+	ENV APACHE_RUN_GROUP="www-data"
+	ENV APACHE_LOG_DIR="/var/log/apache2"
+
+	COPY index.html /var/www/html/
+
+	LABEL description="Webserver"
+
+	VOLUME /var/www/html
+	EXPOSE 80
+
+	ENTRYPOINT ["/usr/sbin/apachectl"]
+	CMD ["-D", "FOREGROUND"]
+	
+Buildamos e criamos o container novamente
+
+	docker image build -t meuapache:3.0 .
+	docker container run -d -p 8080:80 meuapache:3.0
