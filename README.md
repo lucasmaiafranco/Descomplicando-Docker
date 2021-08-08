@@ -70,6 +70,15 @@
   				- [Criando o volume](#criando-o-volume)
 				- [Criando o primeiro container utilizando o volume](#criando-o-primeiro-container-utilizando-o-volume)
 				- [Criando o segundo container utilizando o volume](#criando-o-segundo-container-utilizando-o-volume)
+		- [Backup volume](#backup-volume)
+	- [Dockerfile](#dockerfile)
+		- [Criando um docker file apache](#criando-um-docker-file-apache)
+		- [Build do dockerfile](#build-do-dockerfile)
+		- [Nova imagem do apache](#nova-imagem-do-apache)
+		- [Build novo dockerfile](#build-novo-dockerfile)
+		- [Subindo container com a imagem criada](#subindo-container-com-a-imagem-criada)
+		- [Novo Dockerfile](#novo-dockerfile)
+		- [Build e novo container](#build-e-novo-container)
 
 
 <!-- TOC -->
@@ -382,7 +391,9 @@ Utilizado antigamente quando não tinha volume
 	docker container run -d -p 5433:5432 --name pgsql2 --mount type=volume,src=dbdados,dst=/data -e POSTGRESQL_USER=docker -e POSTGRESQL_PASS=docker -e POSTGRESQL_DB=docker kamui/postgresql
 
 
-### Backup volume (utilizamos volume e volume bind no mesmo container)
+#### Backup volume 
+
+Utilizamos volume e volume bind no mesmo container
 
 Criamos um container passando o volume (dbdados) que queremos fazer backup, o volume será montado no diretório /data. 
 Passamos um diretório para salvar o backup (/opt/backup) e passamos o comando tar para empacotar o diretório /data
@@ -391,7 +402,7 @@ Passamos um diretório para salvar o backup (/opt/backup) e passamos o comando t
 
 ### Dockerfile
 
-Cirando um docker file apache
+#### Criando um docker file apache
 
 	FROM debian
 
@@ -407,11 +418,13 @@ Cirando um docker file apache
 	VOLUME /var/www/html
 	EXPOSE 80
 	
-Fazendo build do dockerfile
+#### Build do dockerfile
 
 	docker image build -t meuapache:1.0 .
 	
-Criando nova imagem do apache, agora colocando o serviço do apache como principal da imagem
+#### Nova imagem do apache
+
+Agora colocamos o serviço do apache como o principal da imagem
 
 	FROM debian
 
@@ -430,15 +443,17 @@ Criando nova imagem do apache, agora colocando o serviço do apache como princip
 	ENTRYPOINT ["/usr/sbin/apachectl"]
 	CMD ["-D", "FOREGROUND"]
 	
-Build da imagem
+#### Build novo dockerfile
 
 	docker image build -t meuapache:2.0 .
 	
-Subindo container com a imagem criada
+#### Subindo container com a imagem criada
 
 	docker container run -d -p 8080:80 meuapache:2.0
 	
-Novo Dockerfile, agora copiando arquvio index.html para dentro do container
+#### Novo Dockerfile 
+
+Agora copiamos o arquvio index.html para dentro do container
 
 	FROM debian
 
@@ -459,7 +474,7 @@ Novo Dockerfile, agora copiando arquvio index.html para dentro do container
 	ENTRYPOINT ["/usr/sbin/apachectl"]
 	CMD ["-D", "FOREGROUND"]
 	
-Buildamos e criamos o container novamente
+#### Build e novo container
 
 	docker image build -t meuapache:3.0 .
 	docker container run -d -p 8080:80 meuapache:3.0
