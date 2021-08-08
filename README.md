@@ -1,5 +1,79 @@
 # Descomplicando-Docker
 
+## Sumário
+
+<!-- TOC -->
+- [Descomplicando-Docker](#descomplicando-Docker)
+  - [Sumário](#sumário)
+  - [Day 01](#day-01)
+	  - [Comandos Vagrant](#comandos-vagrant)
+		- [Para subir a VM](#para-subir-a-vm)
+		- [Verficar Status da VM](#verificar-status-da-vm)
+		- [Conectar SSH](#conectar-ssh)
+	  - [Instalação do Docker](#instalação-do-docker)
+		- [Instalação via Vagrantfile](#instalação-via-vagrantfile)
+	  - [Comandos Docker](#comandos-docker)
+		- [Versão](#versão)
+		- [Visualizar containers em execução](#visualizar-containers-em-execução)
+		- [Visualizar todos containers](#visualizar-todos-containers)
+		- [Primeiro container](#primeiro-container)
+		- [Criando containers](#criando-containers)
+		- [Sair do container sem matar ele](#sair-do-container-sem-matar-ele)
+		- [Conectar no container novamente](#conectar-no-container-novamente)
+		- [Executar container como daemon](#executar-container-como-daemon)
+		- [Executar um comando dentro do container](#executar-um-comando-dentro-do-container)
+		- [start/stop/restart container](#startstoprestart-container)
+		- [pause/unpause container](#pauseunpause-container)
+		- [Informações do container](#informações-do-container)
+		- [Log do container](#log-do-container)
+		- [Remover container](#remover-container)
+		- [Remover todos conatiners que estão stopados](#remover-todos-conatiners-que-estão-stopados)
+		- [Ver o consumo de CPU e memória do container](#ver-o-consumo-de-cpu-e-memória-do-container)
+		- [Ver os processos em execução no container](#ver-os-processos-em-execução-no-container)
+		- [Criando container com o tamanho da memória](#criando-container-com-o-tamanho-da-memória)
+		- [Criando container com o tamanho da memória e CPU](#criando-container-com-o-tamanho-da-memória-e-cpu)
+		- [Atualizar o container - Aumentar memória, CPU, etc](#atualizar-o-container-aumentar-memória-cpu-etc)
+	- [Primeiro Dockerfile](#primeiro-dockerfile)
+		- [Construir uma imagem através do Dockerfile](#construir-uma-imagem-através-do-dockerfile)
+		- [Listar as imagens](#listar-as-imagens)
+		- [Criando container com a nossa imagem](#criando-container-com-a-nossa-imagem)
+  - [Day 02](#day-02)
+  	- [Volumes](#volumes)
+  		- [Bind](#bind)
+  			- [Criando container com volume bind](#criando-container-com-volume-bind)
+  			- [Testes realizados](#testes-realizados)
+  				- [Criamos um diretório](#criamos-um-diretório)
+  				- [Criamos um container passando o diretório criado](#criamos-um-container-passando-o-diretório-criado)
+  				- [Dentro do container criamos um arquivo no diretório](#dentro-do-container-criamos-um-arquivo-no-diretório)
+  				- [Saindo do container](#saindo-do-container)
+  				- [Verificamos o conteúdo do arquivo criado dentro do container](#verificamos-o-conteúdo-do-arquivo-criado-dentro-do-container)
+  		- [Volumes](#volumes)
+  			- [Listar os volumes](#listar-os-volumes)
+  			- [Criando volume](#criando-volume)
+  			- [Verificar as config do volume](#verificar-as-config-do-volume)
+  			- [Diretório do volume](#diretório-do-volume)
+  			- [Criando container utilizando o volume criado](#criando-container-utilizando-o-volume-criado)
+  			- [Deletar todos volumes que não estão sendo utilizados, por nenhum container](#deletar-todos-volumes-que-não-estão-sendo-utilizados-por-nenhum-container)
+  			- [Testes realizados](#testes-realizados)
+  				- [Criando um volume chamado fusca](#criando-um-volume-chamado-fusca)
+  				- [Criando um arquivo dentro do diretório do volume](#criando-um-arquivo-dentro-do-diretório-do-volume)
+  				- [Criando um container debian passando o volume criado](#criando-um-container-debian-passando-o-volume-criado)
+  				- [Dentro do container adicionamos o texto "Fusca Branco" no arquivo criado anteriormente fusca_77](#dentro-do-container-adicionamos-o-texto-fusca-branco-no-arquivo-criado-anteriormente-fusca_77)
+  				- [Saindo do container](#saindo-do-container)
+  				- [Verificando o conteúdo do arquivo](#verificando-o-conteúdo-do-arquivo)
+  				- [Criando outro container centos e verificando o conteudo do mesmo arquivo fusca_77](#criando-outro-container-centos-e-verificando-o-conteudo-do-mesmo-arquivo-fusca_77)
+  		- [Data-Only](#data-only)
+  			- [Criando o container para criar o volume](#criando-o-container-para-criar-o-volume)
+  			- [Criando novo container utilizando o volume](#criando-novo-container-utilizando-o-volume)
+  			- [Criando outro container utilizando o mesmo volume](#criando-outro-container-utilizando-o-mesmo-volume)
+  			- [Exemplo do data only](#exemplo-do-data-only)
+  				- [Criando o volume](#criando-o-volume)
+				- [Criando o primeiro container utilizando o volume](#criando-o-primeiro-container-utilizando-o-volume)
+				- [Criando o segundo container utilizando o volume](#criando-o-segundo-container-utilizando-o-volume)
+
+
+<!-- TOC -->
+
 ## Day 01
 
 - Um pouco de teoria
@@ -8,16 +82,16 @@
 
 ### Comandos Vagrant
 
-Para subir a VM
+#### Para subir a VM
 	
 	vagrant up
 		
-Verificar status da VM
+#### Verificar status da VM
 		
 	vagrant status (Deve estar no diretório que está o Vagrantfile)
 	vagrant global-status (Lista todas VMs da sua máquina)
 		
-Conectar SSH
+#### Conectar SSH
 	
 	vagrant ssh (deve estar no diretório que está o Vagrantfile)
 	vagrant ssh <id da vm>
@@ -26,97 +100,107 @@ Conectar SSH
 ### Instalação do Docker
 
 	apt install curl -y && curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh ./get-docker.sh
+	
+#### Instalação via Vagrantfile
+
+Para instalar o Docker ao subir a VM devemos adicionar a linha abaixo no Vagrantfile
+
+	comando aqui
+
+Segue como ficou o Vagrantfile
+
+	Vagrantfileaqui
 
 ### Comandos docker
 
-Versão
+#### Versão
 	
 	docker version
 		
-Visualizar containers em execução
+#### Visualizar containers em execução
 	
 	docker container ls
 		
-Visualizar todos containers
+#### Visualizar todos containers
 	
 	docker container ls -a
 		
-Primeiro container
+#### Primeiro container
 	
 	docker container run -ti hello-world
 		
 	-ti = terminal e interatividade
 		
-Criando containers
+#### Criando containers
 	
 	docker container run -ti ubuntu
 		
 	docker container run -ti centos
 		
-Para sair do container sem matar ele(bash)
+#### Sair do container sem matar ele
 	
 	CTRL + p + q
 		
-Conectar no container novamente
+#### Conectar no container novamente
 	
 	docker container attach <container ID ou nome do container>
 		
-Executar container como daemon
+#### Executar container como daemon
 	
 	docker container -d nginx
 		
-Executar um comando dentro do container
+#### Executar um comando dentro do container
 	
 	docker container exec -ti <container ID> <comando>
 	docker container exec -ti 86cd7182695f ls /usr/share/nginx/html
 	docker container exec -ti 86cd7182695f bash
 		
-start/stop/restart container
+#### start/stop/restart container
 	
 	docker container start 86cd7182695f
 	docker container stop 86cd7182695f
 	docker container restart 86cd7182695f
 		
-pause/unpause container
+#### pause/unpause container
 	
 	docker container pause <container ID>
 	docker container unpause <container ID>
 
-Informações do container
+#### Informações do container
 
 	docker container inspect <container ID>
 		
-Log do container
+#### Log do container
 
 	docker container logs -f <container ID>
 		
-Remover container
+#### Remover container
 
 	docker container rm <container ID>
 		
 	docker container rm -f <container ID>
 		
-Remover todos conatiner que estão stopados
+#### Remover todos conatiners que estão stopados
 	
 	docker container prune
 		
-Ver o consumo de CPU e memória do container
+#### Ver o consumo de CPU e memória do container
 	
 	docker container stats <container ID>
 		
-Ver os processos em execução no container
+#### Ver os processos em execução no container
 
 	docker container top <container ID>
 		
-Criando container com o tamanho da memória (128 M)
+#### Criando container com o tamanho da memória
 	
 	docker container run -d -m 128M nginx
 
-Criando container com o tamanho da memória (128 M) e CPU (0.5 é a metade de um core)
+#### Criando container com o tamanho da memória e CPU
 
 	docker container run -d -m 128M --cpus 0.5 nginx
 		
-Atualizar o container (aumentar memória, CPU, etc)
+#### Atualizar o container aumentar memória, CPU, etc
 	
 	docker container update --memory 64M --cpus 0.4 nginx
 		
@@ -133,26 +217,28 @@ Atualizar o container (aumentar memória, CPU, etc)
 	# Executa comando quando inicia o container
 	CMD stress --cpu 1 --vm-bytes 64M --vm 1
 		
-Construir uma imagem através do Dockerfile
+#### Construir uma imagem através do Dockerfile
 	
 	docker image build -t toskeira:1.0 .
 		
-Listar as imagens
+#### Listar as imagens
 	
 	docker images ls
 		
-Criando container com a nossa imagem
+#### Criando container com a nossa imagem
 	
 	docker container run -d toskeira:1.0
 		
 ----------------------------------------------------------------------------------------------------------------------	
 ## Day 02
 
-### Volumes Bind
+### Volumes
+
+#### Bind
 
 É quando ja temos um diretório e queremos montar esse diretório dentro do container
 	
-Criando container com volume bind
+##### Criando container com volume bind
 	
 	mkdir /opt/teste
 	
@@ -161,86 +247,101 @@ Criando container com volume bind
 	src -> diretório que deseja usar no container
 	dst -> diretório que será criado no container
 		
-Segue os testes realizados:
+##### Testes realizados
+
 		
-	- Criamos um diretório
-	- Criamos um conteiner passando o diretório criado
-	- Dentro do container criamos um arquivo no diretório
-	- Saimos do container (com isso ele é finalizado)
-	- Verificamos o conteúdo do arquivo criado dentro do container.
-		
-segue os comandos 
+###### Criamos um diretório
 	
 	root@docker-server:/opt# mkdir /opt/teste
+		
+###### Criamos um container passando o diretório criado
+	
 	root@docker-server:/opt# docker container run -ti --mount type=bind,src=/opt/teste,dst=/teste debian
+		
+###### Dentro do container criamos um arquivo no diretório
+	
 	root@eebf87b86a27:/# touch /teste/teste.txt
 	root@eebf87b86a27:/# echo "Isso e um teste" > /teste/teste.txt
+		
+###### Saindo do container
+
+Com isso ele é finalizado
+
 	root@eebf87b86a27:/# exit
 	exit
-	root@docker-server:/opt# docker container ls
-	CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+###### Verificamos o conteúdo do arquivo criado dentro do container.
+		
 	root@docker-server:/opt# cat /opt/teste/teste.txt
 	Isso e um teste
 	root@docker-server:/opt#
 		
-### Volumes
+#### Volumes
 
-Listar os volumes
+##### Listar os volumes
 	
 	docker volume ls
 		
-Criando volume
+##### Criando volume
 	
 	docker volume create <nome do volume>
 		
-Verificar as config do volume
+##### Verificar as config do volume
 	
 	docker volume inspect <nome do volume>
 		
-Diretório do volume (onde ficam os files)
+##### Diretório do volume 
+
+Onde ficam os files
 	
 	/var/lib/docker/volumes/<nome do volume>/_data
 		
-Criando container utilizando o volume criado
+##### Criando container utilizando o volume criado
 	
 	docker container run -ti --mount type=volume,src=<nome do volume>,dst=/teste debian
 
 	src -> nome do volume
 	dst -> diretório que será criado no container
-		
-### Segue os testes realizados
+	
+##### Deletar todos volumes que não estão sendo utilizados, por nenhum container
 
-Criamos um volume chamado fusca
+	docker volume prune
+		
+#### Testes realizados
+
+##### Criando um volume chamado fusca
 
 	root@docker-server:/# docker volume create fusca
 
-Criamos um arquivo dentro do diretório do volume
+##### Criando um arquivo dentro do diretório do volume
 
 	root@docker-server:/# touch /var/lib/docker/volumes/fusca/_data/fusca_77
 
-Criamos um container debian passando o volume criado
+##### Criando um container debian passando o volume criado
 
 	root@docker-server:/# docker container run -ti --mount type=volume,src=fusca,dst=/fusca debian
 
-Dentro do container adicionamos o texto "Fusca Branco" no arquivo criado anteriormente fusca_77
+##### Dentro do container adicionamos o texto "Fusca Branco" no arquivo criado anteriormente fusca_77
 
 	root@8609465c807e:/# ls /fusca/fusca_77
 	/fusca/fusca_77
 	root@8609465c807e:/# echo "Fusca Branco" > /fusca/fusca_77	
 
-Saimos do container (com isso ele é finalizado)
+##### Saindo do container 
+
+Com isso ele é finalizado
 	
 	root@8609465c807e:/# exit
 	exit
 	root@docker-server:/# docker container ls
 	CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 
-Verificamos o conteúdo do arquivo
+##### Verificando o conteúdo do arquivo
 
 	root@docker-server:/# cat /var/lib/docker/volumes/fusca/_data/fusca_77
 	Fusca Branco
 
-Criamos outro container centos e verificamos o conteudo do mesmo arquivo (fusca_77)
+##### Criando outro container centos e verificando o conteudo do mesmo arquivo fusca_77
 
 	root@docker-server:/var/lib/docker/volumes/fusca/_data# docker container run -ti --mount type=volume,src=fusca,dst=/fusca centos
 	[root@1d46daf87440 /]# cat /fusca/fusca_77
@@ -248,37 +349,35 @@ Criamos outro container centos e verificamos o conteudo do mesmo arquivo (fusca_
 	[root@1d46daf87440 /]# exit
 	exit
 		
-Comando para apagar todos volumes que não estão sendo utilizados, por nenhum container
 
-	docker volume prune
+#### Data Only 
 
+Utilizado antigamente quando não tinha volume
 
-### Data Only (utilizado antigamente quando não tinha volume)
-
-Criamos o container para criar o volume
+##### Criando o container para criar o volume
 
 	docker container create -v /data --name dbdados centos
 
-Criamos um container utilizando o volume
+##### Criando novo container utilizando o volume
 
 	docker container run -d -p 5432:5432 --name pgsql1 --volumes-from dbdados -e POSTGRESQL_USER=docker -e POSTGRESQL_PASS=docker -e POSTGRESQL_DB=docker kamui/postgresql
 
-Criamos outro container utilizando o mesmo volume
+##### Criando outro container utilizando o mesmo volume
 
 	docker container run -d -p 5433:5432 --name pgsql2 --volumes-from dbdados -e POSTGRESQL_USER=docker -e POSTGRESQL_PASS=docker -e POSTGRESQL_DB=docker kamui/postgresql
 		
 		
-### Exemplo do data only utilizando volume
+##### Exemplo do data only
 
-Criamos o volume
+###### Criando o volume
 
 	docker volume create dbdados
 
-Criamos o primeiro container utilizando o volume
+###### Criando o primeiro container utilizando o volume
 
 	docker container run -d -p 5432:5432 --name pgsql1 --mount type=volume,src=dbdados,dst=/data -e POSTGRESQL_USER=docker -e POSTGRESQL_PASS=docker -e POSTGRESQL_DB=docker kamui/postgresql
 
-Criamos o segundo container utilizando o volume
+###### Criando o segundo container utilizando o volume
 
 	docker container run -d -p 5433:5432 --name pgsql2 --mount type=volume,src=dbdados,dst=/data -e POSTGRESQL_USER=docker -e POSTGRESQL_PASS=docker -e POSTGRESQL_DB=docker kamui/postgresql
 
