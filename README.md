@@ -114,7 +114,7 @@
 
 Para instalar o Docker ao subir a VM devemos adicionar a linha abaixo no Vagrantfile
 
-	comando aqui
+	docker.vm.provision :shell, inline: "apt install curl -y && curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh ./get-docker.sh"
 
 Segue como ficou o Vagrantfile
 
