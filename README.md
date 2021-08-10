@@ -113,7 +113,10 @@
 		- [Detalhes da VM](#detalhes-da-vm)
 		- [Variaveis da VM](#variaveis-da-vm)
 		- [Remover a VM](#Remover-a-vm)
-
+	- [Docker Swarm](#docker-swarm)
+		- [Manager](#manager)
+		- [Worker](#worker)
+		- [Teoria]´(#teoria)
 
 <!-- TOC -->
 
@@ -783,6 +786,32 @@ Execute o eval novamente
 #### Remover a VM
 
 	docker-machine rm <nome da vm>
+
+### Docker Swarm
+
+O Swarm é a ferramenta nativa de orquestração do docker. Ela permite que containers executem distribuídos em um cluster, controlando a quantidade de containers, registro, deploy e update de serviços.
+
+#### Manager
+
+Responsavel por administrar o cluster, ele sabe onde estão todos os containers de todos os serviços. Manager também executa containers.
+
+#### Worker
+
+Responsavel por executar os container, "Carregar o piano".
+
+#### Teoria
+
+Para o cluster swarm funcionar é necessário no minimo dois managers funcionando.
+
+2 manager, um cai ficamos com 50% e o cluster cai.
+
+3 manager, um cai ficamos com 66% e o cluster continua executando.
+
+Quando perdemos o manager ativo outro manager é eleito como ativo, com isso não é vantajoso termos muitos managers pois ira demorar mais eleger um novo manager.
+
+
+
+
 
 
 
