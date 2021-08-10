@@ -1,9 +1,8 @@
-# Descomplicando-Docker
+# Day 01
 
 ## Sumário
 
 <!-- TOC -->
-- [Descomplicando-Docker](#descomplicando-Docker)
   - [Sumário](#sumário)
   - [Day 01](#day-01)
 	  - [Comandos Vagrant](#comandos-vagrant)
