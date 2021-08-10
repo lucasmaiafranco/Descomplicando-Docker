@@ -102,6 +102,17 @@
 		- [Subir imagem para o registry local](#subir-imagem-para-o-registry-local)
 		- [Container com a imagem do registry local](#container-com-a-imagem-do-registry-local)
 		- [Visualizar imagens do registry local](#visualizar-imagens-do-registry-local)
+	- [Docker-machine](#docker-machine)
+		- [O que é](#o-que-é)
+		- [Instalação](#instalação)
+		- [Criando VM HOSTS](#driando-vm-hosts)
+		- [Listar as VMs](#listar-as-vms)
+		- [IP da VM](#ip-da-vm)
+		- [SSH na VM](#ssh-na-VM)
+		- [Stop/Start na VM](#stop/start-na-VM)
+		- [Detalhes da VM](#detalhes-da-vm)
+		- [Variaveis da VM](#variaveis-da-vm)
+		- [Remover a VM](#Remover-a-vm)
 
 
 <!-- TOC -->
@@ -686,6 +697,100 @@ Criando um container registry
 #### Visualizar imagens do registry local
 
 	curl localhost:5000/v2/_catalog
+
+### Docker-machine
+
+#### O que é
+
+Docker-machiner é uma ferramenta para criar as VMs com Docker, podemos usar tanto local, quanto na nuvem.
+No nosso caso utilizaremos local com drivers do virtualbox.
+
+Nesse momento deixaremos de usar o Vagrant e instalaremos o docker-machine para fazer o controle de nossas VMs no próprio Desktop.
+
+#### Instalação
+
+Acesse o site abaixo para instalar docker-machine
+
+https://docs.docker.com/machine/install-machine/
+
+#### Criando VM HOSTS
+
+	docker-machine create --driver virtualbox giropops
+
+A máquina apresentou o seguinte erro: 
+
+	Error with pre-create check: "This computer doesn't have VT-X/AMD-v enabled. Enabling it in the BIOS is mandatory"
+
+Com isso utilizamos a opção --virtualbox-no-vtx-check
+
+	docker-machine create --driver virtualbox --virtualbox-no-vtx-check giropops
+
+#### Listar as VMs
+
+	docker-machine ls
+
+#### IP da VM
+
+	docker-machine ip <nome da vm>
+
+#### SSH na VM
+
+	docker-machine ssh <nome da vm>
+
+#### Stop/Start na VM
+
+	docker-machine stop <nome da vm>
+
+	docker-machine start <nome da vm>
+
+#### Detalhes da VM
+
+	docker-machine inspect <nome da vm>
+
+#### Variaveis da VM
+
+	docker-machine env <nome da vm>
+
+A saída deve ser parecida com essa:
+
+	export DOCKER_TLS_VERIFY="1"
+	export DOCKER_HOST="tcp://192.168.99.100:2376"
+	export DOCKER_CERT_PATH="C:\Users\N6170144\.docker\machine\machines\giropops"
+	export DOCKER_MACHINE_NAME="giropops"
+	export COMPOSE_CONVERT_WINDOWS_PATHS="true"
+	# Run this command to configure your shell:
+	# eval $("C:\Users\N6170144\bin\docker-machine.exe" env giropops)
+
+Podemos utilizar o comando eval para conectar nosso docker cliente no docker daemon da VM
+
+	eval $("C:\Users\N6170144\bin\docker-machine.exe" env giropops)
+
+Para remover o docker daemon da VM
+
+	docker-machine env -u
+
+	unset DOCKER_TLS_VERIFY
+	unset DOCKER_HOST
+	unset DOCKER_CERT_PATH
+	unset DOCKER_MACHINE_NAME
+	# Run this command to configure your shell:
+	# eval $("C:\Users\N6170144\bin\docker-machine.exe" env -u)
+
+Execute o eval novamente
+
+	eval $("C:\Users\N6170144\bin\docker-machine.exe" env -u)
+
+#### Remover a VM
+
+	docker-machine rm <nome da vm>
+
+
+
+
+
+
+
+
 
 
 
