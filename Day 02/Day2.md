@@ -81,6 +81,24 @@
 		- [Manager](#manager)
 		- [Worker](#worker)
 		- [Teoria]´(#teoria)
+		- [Prática](#pratica)
+			- [Criando 3 VMs](#criando-3-vms)
+			- [Iniciando o Swarm](#iniciando-o-swarm)
+			- [Adicionando server02 e server03 no cluster](#adicionando-server02-e-server03-no-cluster)
+			- [Node como manager](#node-como-manager)
+			- [Node como worker](#node-como-worker)
+			- [Remover server do cluster](#remover-server-do-cluster)
+			- [Visualizar a chave](#visualizar-a-chave)
+				- [Worker](#worker)
+				- [Manager](#manager)
+			- [Gerar novas chaves](#gerar-novas-chaves)
+				- [Worker](#worker)
+				- [Manager](#manager)
+	- [Docker Service](#docker-service)
+		- [Criando servio](#criando-servio)
+		- [Listar Serviços](#listar-serviços)
+		- [Listar os container](#listar-os-container)
+		- [Aumentar ou diminuir quantidade de containers](#aumentar-ou-diminuir-quantidade-de-containers)
 
 <!-- TOC -->
 
@@ -600,3 +618,130 @@ Para o cluster swarm funcionar é necessário no minimo dois managers funcionand
 3 manager, um cai ficamos com 66% e o cluster continua executando.
 
 Quando perdemos o manager ativo outro manager é eleito como ativo, com isso não é vantajoso termos muitos managers pois ira demorar mais eleger um novo manager.
+
+#### Prática
+
+##### Criando 3 VMs
+Vamos criar 3 hosts
+
+	docker-machine create --driver virtualbox --virtualbox-no-vtx-check server01
+	docker-machine create --driver virtualbox --virtualbox-no-vtx-check server02
+	docker-machine create --driver virtualbox --virtualbox-no-vtx-check server03
+
+As VMs 
+
+	$ docker-machine ls
+	NAME       ACTIVE   DRIVER       STATE     URL                         SWARM   DOCKER      ERRORS
+	server01   -        virtualbox   Running   tcp://192.168.99.101:2376           v19.03.12
+	server02   -        virtualbox   Running   tcp://192.168.99.102:2376           v19.03.12
+	server03   -        virtualbox   Running   tcp://192.168.99.103:2376           v19.03.12
+
+
+##### Iniciando o Swarm
+
+Acessando o server01 vamos iniciar o docker swarm
+
+	docker swarm init --advertise-addr 192.168.99.101
+
+##### Adicionando server02 e server03 no cluster
+
+Ao criarmos o cluster é mostrado um comando com uma chave para adicionar os outros server. Devemos armazenar com segurança essa chave
+
+	docker@server01:~$ docker swarm init --advertise-addr 192.168.99.101
+	Swarm initialized: current node (1l8vo1wu6ctjdlwjwkz46nlrq) is now a manager.
+
+	To add a worker to this swarm, run the following command:
+
+		docker swarm join --token SWMTKN-1-1fb7fnh3f7aokzpub761gitka1y4b3467gsf0dzg32by05yxze-bblflomyuffd6chc0x1x7hl90 192.168.99.101:2377
+
+	To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
+
+Devemos executar esse comando no server02 e server03
+
+##### Node como manager
+
+Para promover o server como manager
+
+	docker node promote <server>
+
+	docker node promote server02
+
+##### Node como worker
+
+Para colocar node como worker
+
+	docker node demote <server manager>
+
+	docker node demote server02
+
+##### Remover server do cluster
+
+O node não pode ser manager, caso seja rode o demote e depois o rm
+
+	docker node rm -f server02
+
+##### Visualizar a chave
+
+###### Worker
+
+	docker swarm join-token worker
+
+###### Manager
+
+	docker swarm join-token manager
+
+###### Gerar novas chaves
+
+Para podermos gerar novas chaves do nosso cluster.
+
+###### Worker
+
+	docker swarm join-token --rotate worker
+
+###### Manager
+
+	docker swarm join-token --rotate manager
+
+#### Docker Service
+
+Ele é uma feature que foi incorporada pela engine Docker em sua última versão e que permite ao administrador criar e administrar sua stack de serviço dentro de um cluster Swarm, sem precisar utilizar uma segunda ferramenta para isso. Ele também faz o balanceamento entre os containers.
+
+##### Criando servio
+
+	docker service create --name sitedaempresa --replicas 3 -p 8080:80 nginx
+
+	--name -> nome do serviço
+	--replicas -> quantos container serão usados
+	-p -> bindar porta 8080 para 80 dos containers
+
+##### Listar Serviços
+
+	docker service ls
+
+	docker@server01:~$ docker service ls
+	ID                  NAME                MODE                REPLICAS            IMAGE               PORTS
+	7899ij56ateg        sitedaempresa       replicated          3/3                 nginx:latest        *:8080->80/tcp
+
+#### Listar os container 
+
+	docker service ps <nome do serviço>
+
+	docker@server01:~$ docker service ps sitedaempresa
+	ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STATE           ERROR               PORTS
+	pcu70w893xja        sitedaempresa.1     nginx:latest        server01            Running             Running 4 minutes ago
+	p70qx2qi8o6h        sitedaempresa.2     nginx:latest        server03            Running             Running 4 minutes ago
+	olepiqa3m178        sitedaempresa.3     nginx:latest        server01            Running             Running 4 minutes ago
+
+#### Aumentar ou diminuir quantidade de containers
+
+Aumentando para 10 containers
+
+	docker service scale <nome do serviço>=10
+
+	docker service scale sitedaempresa=10
+
+Diminuindo para 1 container
+
+	docker service scale <nome do serviço>=1
+
+	docker service scale sitedaempresa=1
