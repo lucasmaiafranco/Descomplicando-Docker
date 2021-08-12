@@ -135,6 +135,7 @@
 		- [Listar Serviços](#listar-serviços)
 		- [Listar os container](#listar-os-container)
 		- [Aumentar ou diminuir quantidade de containers](#aumentar-ou-diminuir-quantidade-de-containers)
+		- [Ver o log do service](#ver-o-log-do-service)
 
 
 <!-- TOC -->
@@ -955,4 +956,8 @@ Diminuindo para 1 container
 
 	docker service scale sitedaempresa=1
 
+
+#### Ver o log do service
+
+	docker service logs -f <nome do serviço>
 
