@@ -1,1 +1,4 @@
 .vagrant/
+servers/server01/.vagrant/
+servers/server02/.vagrant/
+servers/server03/.vagrant/
