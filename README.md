@@ -131,11 +131,30 @@
 				- [Worker](#worker)
 				- [Manager](#manager)
 	- [Docker Service](#docker-service)
-		- [Criando servio](#criando-servio)
+		- [Criando serviço](#criando-serviço)
 		- [Listar Serviços](#listar-serviços)
 		- [Listar os container](#listar-os-container)
 		- [Aumentar ou diminuir quantidade de containers](#aumentar-ou-diminuir-quantidade-de-containers)
 		- [Ver o log do service](#ver-o-log-do-service)
+	- [LAB](#LAB)
+		- [Criando o cluster Swarm](#criando-o-cluster-Swarm)
+		- [Adicionando server02 e server03 no cluster](#adicionando-server02-e-server03-no-cluster)
+		- [Status do cluster](#status-do-cluster)
+		- [GlusterFS](#glusterFS)
+			- [Instalando GLusterFS](#instalando-glusterfs)
+			- [Serviço GlusterFS](#serviço-glusterfs)
+			- [Em uma linha](#em-uma-linha)
+			- [Editando o arquivo hosts](#editando-o-arquivo-hosts)
+			- [Criando uma pool de armazenamento confiável](#criando-uma-pool-de-armazenamento-confiável)
+			- [Listando os nós](#listando-os-nós)
+			- [Criando volume](#criando-volume)
+			- [Ativando o Volume](#ativando-o-volume)
+			- [Verificando o volume](#verificando-o-volume)
+			- [Montando o volume](#montando-o-volume)
+			- [Criando index.html](#criando-index.html)
+		- [Criando Volume no docker](#criando-volume-no-docker)
+		- [Criando link simbolico](#criando-link-simbolico)
+		- [Criando serviço no docker](#criando-serviço-no-docker)
 
 
 <!-- TOC -->
@@ -916,7 +935,7 @@ Para podermos gerar novas chaves do nosso cluster.
 
 Ele é uma feature que foi incorporada pela engine Docker em sua última versão e que permite ao administrador criar e administrar sua stack de serviço dentro de um cluster Swarm, sem precisar utilizar uma segunda ferramenta para isso. Ele também faz o balanceamento entre os containers.
 
-##### Criando servio
+##### Criando serviço
 
 	docker service create --name sitedaempresa --replicas 3 -p 8080:80 nginx
 
@@ -960,4 +979,171 @@ Diminuindo para 1 container
 #### Ver o log do service
 
 	docker service logs -f <nome do serviço>
+
+
+### LAB
+
+Vamos criar 3 máquinas virtuais com o Vagrant
+
+	servers/
+		server01/
+			Vagrantfile
+		server02/
+			Vagrantfile
+		server03
+			Vagrantfile
+
+No provisionamento das máquinas foi instalado o docker, vamos utilizar o GlusterFS para criar e compartilhar volume entre elas.
+
+#### Criando o cluster Swarm
+
+Criamos o cluster no server01
+
+	root@server01:~# docker swarm init --advertise-addr 192.168.99.11
+
+#### Adicionando server02 e server03 no cluster
+
+	root@server02:~# docker swarm join --token <token> 192.168.99.11:2377
+
+	root@server03:~# docker swarm join --token <token> 192.168.99.11:2377
+
+#### Status do cluster
+
+	root@server01:~# docker node ls
+	ID                            HOSTNAME   STATUS    AVAILABILITY   MANAGER STATUS   ENGINE VERSION
+	pvazi4p9we4r1ks9gjnj08c9e *   server01   Ready     Active         Leader           20.10.8
+	4wktgf4ilrae0m0sm7nyalnyl     server02   Ready     Active                          20.10.8
+	xf9hkh219gbk3fiqhei3nvmhq     server03   Ready     Active                          20.10.8
+
+
+#### GlusterFS
+
+##### Instalando GLusterFS
+
+	root@server01:~# apt update
+
+	root@server01:~# apt install software-properties-common
+
+	root@server01:~# add-apt-repository ppa:gluster/glusterfs-7
+
+	root@server01:~# apt update
+
+	root@server01:~# apt install glusterfs-server
+
+##### Serviço GlusterFS
+
+	root@server01:~# systemctl start glusterd
+
+	root@server01:~# systemctl enable glusterd
+
+##### Em uma linha
+
+	apt update && apt install software-properties-common && add-apt-repository -y ppa:gluster/glusterfs-7 && apt update && apt install -y glusterfs-server && systemctl start glusterd && systemctl enable glusterd
+
+##### Editando o arquivo hosts
+
+Devemos adicionar o IP e nome de cada máquina
+
+Server01
+
+	/etc/hosts
+
+	192.168.99.21 server02 server02
+	192.168.99.31 server03 server03
+
+Server02
+
+	/etc/hosts
+
+	192.168.99.11 server01 server01
+	192.168.99.31 server03 server03
+
+Server03
+
+	/etc/hosts
+
+	192.168.99.11 server01 server01
+	192.168.99.21 server02 server02
+
+##### Criando uma pool de armazenamento confiável
+
+	root@server01:/# gluster peer probe server02
+
+	root@server01:/# gluster peer probe server03
+
+##### Listando os nós
+
+	root@server01:/etc/glusterfs# gluster peer status
+	Number of Peers: 2
+
+	Hostname: server02
+	Uuid: d6921e47-2c73-4c4f-9ee9-c5795f60d409
+	State: Peer in Cluster (Connected)
+
+	Hostname: server03
+	Uuid: 2d5f2fe6-d4c9-49d1-bef8-6e09596398ee
+	State: Peer in Cluster (Connected)
+
+##### Criando volume
+
+	gluster volume create volume_name replica number_of_servers domain1.com:/path/to/data/directory domain2.com:/path/to/data/directory force
+
+	volume_name -> Nome do volume
+	replica number_of_servers -> replica é o tipo de volume e o número de servidores 
+
+	domain1.com:/… e domain2.com:/… -> Eles definem a localização das máquinas e do diretório do bricks — o termo do GlusterFS para sua unidade básica de armazenamento, que inclui todos os diretórios em todas as máquinas que sirvam como parte ou uma cópia de um volume maior — que formarão o volume1. O exemplo a seguir irá criar um diretório chamado gluster-storage no diretório root de ambos os servidores.
+
+	force -> Essa opção irá sobrescrever quaisquer avisos ou opções que de outra forma apareceriam e interromperiam a criação do volume.
+
+Segue o comando utilizado:
+
+	gluster volume create volume01 replica 3 transport tcp server01:/gluster-volumes/brick1/ server02:/gluster-volumes/brick1/ server03:/gluster-volumes/brick1/ force
+
+##### Ativando o Volume
+
+	gluster volume start volume-site01
+
+##### Verificando o volume
+
+	gluster volume status
+
+	root@server01:/# gluster volume status
+	Status of volume: volume-site01
+	Gluster process                             TCP Port  RDMA Port  Online  Pid
+	------------------------------------------------------------------------------
+	Brick server01:/gluster-volumes/brick1      49152     0          Y       14087
+	Brick server02:/gluster-volumes/brick1      49152     0          Y       14072
+	Brick server03:/gluster-volumes/brick1      49152     0          Y       13778
+	Self-heal Daemon on localhost               N/A       N/A        Y       14108
+	Self-heal Daemon on server03                N/A       N/A        Y       13806
+	Self-heal Daemon on server02                N/A       N/A        Y       14093
+
+	Task Status of Volume volume-site01
+	------------------------------------------------------------------------------
+	There are no active volume tasks
+
+##### Montando o volume
+
+	mkdir -p /storage-pool/site01
+
+	mount -t glusterfs server01:/volume-site01 /storage-pool/site01/
+
+##### Criando index.html
+
+	echo "Teste volume com docker swarm" > /storage-pool/site01/index.html
+
+#### Criando Volume no docker 
+
+	docker volume create site01
+
+#### Criando link simbolico
+
+Vamos criar um link simbolico do nosso volume Glaster para o volume do docker
+
+	ln -s /storage-pool/site01/_data/ /var/lib/docker/volumes/site01/
+
+#### Criando serviço no docker
+
+	docker service create --name site01 --replicas 6 -p 8080:80 --mount type=volume,src=site01,dst=/usr/share/nginx/html nginx
+
 

@@ -1,4 +1,7 @@
 .vagrant/
 servers/server01/.vagrant/
+servers/server01/*.log
 servers/server02/.vagrant/
+servers/server02/*.log
 servers/server03/.vagrant/
+servers/server03/*.log
