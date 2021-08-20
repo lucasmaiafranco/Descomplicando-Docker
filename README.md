@@ -102,6 +102,7 @@
 		- [Subir imagem para o registry local](#subir-imagem-para-o-registry-local)
 		- [Container com a imagem do registry local](#container-com-a-imagem-do-registry-local)
 		- [Visualizar imagens do registry local](#visualizar-imagens-do-registry-local)
+ - [Day 03](#day-03)
 	- [Docker-machine](#docker-machine)
 		- [O que é](#o-que-é)
 		- [Instalação](#instalação)
@@ -155,7 +156,7 @@
 		- [Criando Volume no docker](#criando-volume-no-docker)
 		- [Criando link simbolico](#criando-link-simbolico)
 		- [Criando serviço no docker](#criando-serviço-no-docker)
-
+  - [Day 04](#day-04)
 
 <!-- TOC -->
 
@@ -740,6 +741,9 @@ Criando um container registry
 
 	curl localhost:5000/v2/_catalog
 
+
+## Day 03
+
 ### Docker-machine
 
 #### O que é
@@ -1146,4 +1150,6 @@ Vamos criar um link simbolico do nosso volume Glaster para o volume do docker
 
 	docker service create --name site01 --replicas 6 -p 8080:80 --mount type=volume,src=site01,dst=/usr/share/nginx/html nginx
 
+
+## Day 04
 
