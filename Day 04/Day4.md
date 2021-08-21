@@ -1,7 +1,6 @@
-<!-- TOC -->
 
   - [Day 04](#day-04)
-		- [Secrets](#secrets)
+	- [Secrets](#secrets)
 
 <!-- TOC -->
 
