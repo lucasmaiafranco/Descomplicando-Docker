@@ -1,5 +1,6 @@
 # Descomplicando-Docker
 
+
 ## Sumário
 
 <!-- TOC -->
@@ -1302,9 +1303,3 @@ O serviço wordpress só irá subir após o db subir (opção depends_on)
 
 	docker service logs -f wordpress_db
     docker service logs -f wordpress_wordpress
-
-
-
-
-
-
