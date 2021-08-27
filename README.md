@@ -137,6 +137,7 @@
 		- [Listar os container](#listar-os-container)
 		- [Aumentar ou diminuir quantidade de containers](#aumentar-ou-diminuir-quantidade-de-containers)
 		- [Ver o log do service](#ver-o-log-do-service)
+		- [Adicionar rede no serviço](#dicionar-rede-no-serviço)
 	- [LAB](#LAB)
 		- [Criando o cluster Swarm](#criando-o-cluster-Swarm)
 		- [Adicionando server02 e server03 no cluster](#adicionando-server02-e-server03-no-cluster)
@@ -1009,6 +1010,9 @@ Diminuindo para 1 container
 
 	docker service logs -f <nome do serviço>
 
+#### Adicionar rede no serviço
+
+	docker service update --network-add network service
 
 ### LAB
 
