@@ -1,6 +1,5 @@
 # Descomplicando-Docker
 
-
 ## Sumário
 
 <!-- TOC -->
@@ -178,7 +177,7 @@
 		- [Visualizer](#visualizer)
 			- [docker compose](#docker-compose)
 			- [Adicionando tag no node](#adicionando-tag-no-node)
-			- [Deploy do docker compose](#deploy-do-docker-compose)
+			- [Deploy](#deploy)
 		- [Exemplo Voting App](#exemplo-voting-app)
 			- [Docker compose](#docker-compose)
 			- [Deploy](#deploy)
@@ -1380,7 +1379,7 @@ Se nenhum noe tiver essa label os containers nginx ficam em status peending
 
 	docker node update --label-add dc=UK server03
 
-##### Deploy do docker compose
+##### Deploy
 
 	docker stack deploy -c docker-compose.yaml site03
 
